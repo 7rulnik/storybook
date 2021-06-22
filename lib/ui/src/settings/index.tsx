@@ -1,5 +1,5 @@
 import { useStorybookApi, useStorybookState } from '@storybook/api';
-import { IconButton, Icons, TabButton, ScrollArea, Tabs } from '@storybook/components';
+import { IconButton, Icons, FlexBar, TabButton, ScrollArea } from '@storybook/components';
 import { Location, Route } from '@storybook/router';
 import { styled } from '@storybook/theming';
 import global from 'global';
@@ -11,6 +11,14 @@ import { ShortcutsPage } from './shortcuts_page';
 import { matchesModifiers, matchesKeyCode } from '../keybinding';
 
 const { document } = global;
+
+const TabBar = styled.div({
+  overflow: 'hidden',
+
+  '&:first-of-type': {
+    marginLeft: 0,
+  },
+});
 
 const TabBarButton = React.memo<{
   changeTab: (tab: string) => void;
@@ -37,10 +45,19 @@ const TabBarButton = React.memo<{
   </Location>
 ));
 
-const Content = styled(ScrollArea)(({ theme }) => ({
-  top: 40,
-  backgroundColor: theme.background.content,
-}));
+const Content = styled(ScrollArea)(
+  {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    overflow: 'auto',
+  },
+  ({ theme }) => ({
+    background: theme.background.content,
+  })
+);
 
 const Pages: FunctionComponent<{
   onClose: () => void;
@@ -62,26 +79,25 @@ const Pages: FunctionComponent<{
 
   return (
     <Fragment>
-      <Tabs
-        tools={
-          <IconButton
-            onClick={(e: SyntheticEvent) => {
-              e.preventDefault();
-              return onClose();
-            }}
-            title="Close settings page"
-          >
-            <Icons icon="close" />
-          </IconButton>
-        }
-      >
-        <TabBarButton id="about" title="About" changeTab={changeTab} />
-        {hasReleaseNotes && (
-          <TabBarButton id="release-notes" title="Release notes" changeTab={changeTab} />
-        )}
-        <TabBarButton id="shortcuts" title="Keyboard shortcuts" changeTab={changeTab} />
-      </Tabs>
-      <Content vertical absolute>
+      <FlexBar border>
+        <TabBar role="tablist">
+          <TabBarButton id="about" title="About" changeTab={changeTab} />
+          {hasReleaseNotes && (
+            <TabBarButton id="release-notes" title="Release notes" changeTab={changeTab} />
+          )}
+          <TabBarButton id="shortcuts" title="Keyboard shortcuts" changeTab={changeTab} />
+        </TabBar>
+        <IconButton
+          onClick={(e: SyntheticEvent) => {
+            e.preventDefault();
+            return onClose();
+          }}
+          title="Close settings page"
+        >
+          <Icons icon="close" />
+        </IconButton>
+      </FlexBar>
+      <Content vertical horizontal={false}>
         <Route path="about">
           <AboutPage key="about" />
         </Route>
