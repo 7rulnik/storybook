@@ -1,3 +1,4 @@
+import root from 'window-or-global';
 import { StoryStore } from '@storybook/client-api';
 
 declare global {
